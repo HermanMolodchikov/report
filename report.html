@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta chrset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="ico/png26.ico" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/echarts.js"></script>
+
+  <title>V-Labs</title>
+</head>
+
+<body>
+
+  <style>
+    body {
+      font-family: "Tahoma", sans-serif;
+      font-size: 10px;
+      line-height: 25px;
+      color: #164a44;
+
+    }
+
+    .brand {
+      text-align: center;
+    }
+
+    .zone {
+      border: 2px solid #164a44;
+      height: 50px;
+      margin: 10px;
+    }
+
+    .picture {
+      height: 20px;
+    }
+
+    #placeholder {
+      width: 450px;
+      height: 200px;
+    }
+  </style>
+
+  <h2 class="brand">V-LABS</h2>
+
+  <div id="main" style="margin:0 auto; height:400px;"></div>
+
+  <div id="output" style="min-height: 200px; white-space: pre; border: 1px solid black;"
+    ondragenter="document.getElementById('output').textContent = ''; event.stopPropagation(); event.preventDefault();"
+    ondragover="event.stopPropagation(); event.preventDefault();" ondrop="event.stopPropagation(); event.preventDefault();
+    dodrop(event);">
+    DROP FILES HERE FROM FINDER OR EXPLORER
+
+
+
+  </div>
+  <!-- JavaScript code -->
+
+  <script type="text/javascript">
+    var range = [];
+
+    function output(text) {
+      document.getElementById("output").textContent += text;
+      //dump(text);
+    }
+
+    function getCol(matrix, col) {
+      var column = [];
+      for (var itemRow = 1; itemRow < matrix.length - 1; itemRow++) {
+        if (col[itemRow] == NaN) break;
+        column.push(matrix[itemRow][col]);
+      }
+      return column;
+    }
+
+    function dodrop(event) {
+      let dt = event.dataTransfer;
+      let files = dt.files;
+      let count = files.length;
+      //output("File Count: " + count + "\n");
+
+      for (let i = 0; i < files.length; i++) {
+        let reader = new FileReader();
+        reader.readAsText(files[i]);
+        reader.onload = function () {
+          var data = [];
+          var csv = reader.result;
+          var rows = csv.split(/\r\n|\n/);
+          for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].split(";").splice(
+              3); //преобразоваываем каждую сторку в массив и убираем не нужные жанные
+            //console.log(cells[i]);
+            data.push(cells);
+          }
+
+          var points = data[0];
+          var value = [];
+          for (var stringMeas = 0; stringMeas < data.length; stringMeas++) {
+            var curentGetCol = getCol(data, stringMeas);
+            let minValue = Math.min.apply(null, curentGetCol);
+            let maxValue = Math.max.apply(null, curentGetCol);
+            let currentCalc = (maxValue - minValue);
+            //console.log(currentCalc);
+            value.push(currentCalc.toFixed(2));
+          }
+
+          //console.log(value);
+          for (var item = 0; item < data.length; item++) { //data[0] колличество точек
+            range.push(points[item]);
+            range[item] = [];
+            range[item].push(Number(value[item]));
+            //console.log(Number(value[item]));
+            range[item].push(points[item]);
+
+          }
+          console.log(range);
+          var option = {
+
+            dataset: {
+              dimensions: ['rangeValue', 'namePoint'],
+              source: range
+            },
+            xAxis: {
+              type: 'category'
+            },
+            yAxis: {},
+            series: {
+              type: 'bar',
+              encode: {
+                x: 'namePoint',
+                y: 'rangeValue'
+              }
+            }
+          };
+          option && myChart.setOption(option);
+        }
+        reader.onerror = function () {
+          console.log(reader.error);
+        }
+
+      }
+    };
+
+    // var data = [];
+    // var csv = dodrop.result;
+    // var rows = csv.split("\n");
+
+    // for (var i = 0; i < rows.length; i++) {
+    //   var cells = rows[i].split(",");
+    //   data.push(cells);
+    // }
+
+
+    //reading file
+    // var doc = document.getElementById("doc");
+    // document.querySelector("button").addEventListener('click', function () {
+    //   let file = document.getElementById("file").files[0];
+    //   let reader = new FileReader();
+    //   reader.readAsText(file); // читаем файл как текст
+    //   reader.onload = function () {
+    //     //doc.textContent = parse(reader.result); //записываем в виде текста файл
+    //     doc.textContent = reader.result; //записываем в виде текста файл
+    //     //console.log(reader.result);
+    //     console.log(reader.result);
+    //   }
+    //   reader.onerror = function () {
+    //     console.log(parse(reader.error));
+    //   }
+    // });
+    // based on prepared DOM, initialize echarts instance
+
+    var app = {};
+
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    var posList = [
+      'left', 'right', 'top', 'bottom',
+      'inside',
+      'insideTop', 'insideLeft', 'insideRight', 'insideBottom',
+      'insideTopLeft', 'insideTopRight', 'insideBottomLeft', 'insideBottomRight'
+    ];
+
+    app.configParameters = {
+      rotate: {
+        min: -90,
+        max: 90
+      },
+      align: {
+        options: {
+          left: 'left',
+          center: 'center',
+          right: 'right'
+        }
+      },
+      verticalAlign: {
+        options: {
+          top: 'top',
+          middle: 'middle',
+          bottom: 'bottom'
+        }
+      },
+      position: {
+        options: posList.reduce(function (map, pos) {
+          map[pos] = pos;
+          return map;
+        }, {})
+      },
+      distance: {
+        min: 0,
+        max: 100
+      }
+    };
+
+    app.config = {
+      rotate: 90,
+      align: 'left',
+      verticalAlign: 'middle',
+      position: 'bottom',
+      distance: 100,
+      onChange: function () {
+        var labelOption = {
+          normal: {
+            rotate: app.config.rotate,
+            align: app.config.align,
+            verticalAlign: app.config.verticalAlign,
+            position: app.config.position,
+            distance: app.config.distance
+          }
+        };
+        myChart.setOption({
+          series: [{
+            label: labelOption
+          }, {
+            label: labelOption
+          }, {
+            label: labelOption
+          }, {
+            label: labelOption
+          }]
+        });
+      }
+    };
+
+
+    var labelOption = {
+      show: true,
+      position: app.config.position,
+      distance: app.config.distance,
+      align: app.config.align,
+      verticalAlign: app.config.verticalAlign,
+      rotate: app.config.rotate,
+      formatter: '{c}  {name|{a}}',
+      fontSize: 11,
+      rich: {
+        name: {}
+      }
+    };
+
+    option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      legend: {
+        data: ['V-LABS']
+      },
+      toolbox: {
+        show: true,
+        orient: 'vertical',
+        left: 'right',
+        top: 'center',
+        feature: {
+          mark: {
+            show: true
+          },
+          dataView: {
+            show: true,
+            readOnly: false
+          },
+          magicType: {
+            show: true,
+            type: ['line', 'bar', 'stack', 'tiled']
+          },
+          restore: {
+            show: true
+          },
+          saveAsImage: {
+            show: true
+          }
+        }
+      },
+      dataZoom: [{
+          type: 'slider',
+          show: true,
+          xAxisIndex: [0],
+          start: 0,
+          end: 100
+        },
+        {
+          type: 'slider',
+          show: true,
+          yAxisIndex: [0],
+          left: '1%',
+          start: 0,
+          end: 100
+        },
+        {
+          type: 'inside',
+          xAxisIndex: [0],
+          start: 1,
+          end: 1
+        },
+        {
+          type: 'inside',
+          yAxisIndex: [0],
+          start: 1,
+          end: 1
+        }
+      ]
+    };
+
+    option && myChart.setOption(option);
+  </script>
+
+
+
+
+</body>
+
+</html>
