@@ -62,6 +62,7 @@
 
   <script type="text/javascript">
     var range = [];
+    var sortRange = [];
 
     function output(text) {
       document.getElementById("output").textContent += text;
@@ -108,7 +109,8 @@
             value.push(currentCalc.toFixed(2));
           }
 
-          //console.log(value);
+
+
           for (var item = 0; item < data.length; item++) { //data[0] колличество точек
             range.push(points[item]);
             range[item] = [];
@@ -117,12 +119,21 @@
             range[item].push(points[item]);
 
           }
-          console.log(range);
+          range.sort(RecordSort);
+
+          function RecordSort(a, b) {
+            if (a[0] < b[0]) return 1;
+            else if (a[0] > b[0]) return -1;
+            else return 0;
+          }
+          for (var i = 0; i < range.length; i++)
+            sortRange.push(range[i]);
+          console.log(sortRange);
           var option = {
 
             dataset: {
               dimensions: ['rangeValue', 'namePoint'],
-              source: range
+              source: sortRange
             },
             xAxis: {
               type: 'category'
