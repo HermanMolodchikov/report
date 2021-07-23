@@ -47,7 +47,7 @@
 
   <h2 class="brand">V-LABS</h2>
 
-  <div id="main" style="margin:0 auto; height:400px;"></div>
+  <div id="main" style="height:600px;"></div>
 
   <div id="output" style="min-height: 200px; white-space: pre; border: 1px solid black;"
     ondragenter="document.getElementById('output').textContent = ''; event.stopPropagation(); event.preventDefault();"
@@ -130,16 +130,28 @@
             sortRange.push(range[i]);
           console.log(sortRange);
           var option = {
-
+            grid: {
+              bottom: 200,
+              width: 'auto'
+            },
             dataset: {
               dimensions: ['rangeValue', 'namePoint'],
               source: sortRange
             },
             xAxis: {
-              type: 'category'
+              type: 'category',
+              axisLabel: {
+                interval: 0,
+                rotate: 90
+              },
+              margin: 50
             },
             yAxis: {},
             series: {
+              label: {
+                show: true,
+                rotate: 90
+              },
               type: 'bar',
               encode: {
                 x: 'namePoint',
@@ -274,6 +286,16 @@
     };
 
     option = {
+
+      xAxis: {
+        type: 'category',
+        axisLabel: {
+          interval: 0,
+          rotate: 30
+        },
+      },
+      yAxis: {},
+      series: {},
       tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -313,7 +335,7 @@
           show: true,
           xAxisIndex: [0],
           start: 0,
-          end: 100
+          end: 25
         },
         {
           type: 'slider',
@@ -336,6 +358,7 @@
           end: 1
         }
       ]
+
     };
 
     option && myChart.setOption(option);
