@@ -47,9 +47,9 @@
 
   <h2 class="brand">V-LABS</h2>
 
-  <div id="main" style="height:600px;"></div>
+  <div id="main" style="height:300px;"></div>
 
-  <div id="output" style="min-height: 200px; white-space: pre; border: 1px solid black;"
+  <div id="output" accept=".csv" style="min-height: 200px; white-space: pre; border: 1px solid black;"
     ondragenter="document.getElementById('output').textContent = ''; event.stopPropagation(); event.preventDefault();"
     ondragover="event.stopPropagation(); event.preventDefault();" ondrop="event.stopPropagation(); event.preventDefault();
     dodrop(event);">
@@ -58,52 +58,79 @@
 
 
   </div>
+
+  <input id="csvfile" type="file" name="readable" accept=".csv" />
+
+  <div hidden id="preview"></div><!-- спрятанный элемент -->
+  <div hidden id="compensated"></div><!-- спрятанный элемент -->
+  <div hidden id="uncompensated"></div><!-- спрятанный элемент -->
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <!-- JavaScript code -->
 
   <script type="text/javascript">
+    let compensated = document.getElementById('compensated');
+    let uncompensated = document.getElementById('uncompensated');
     var range = [];
     var sortRange = [];
+    var files;
 
-    function output(text) {
-      document.getElementById("output").textContent += text;
-      //dump(text);
-    }
+    // function output(text) {
+    //   document.getElementById("output").textContent += text;
+    //   //dump(text);
+    //   console.log('output');
+    // }
 
     function getCol(matrix, col) {
       var column = [];
       for (var itemRow = 1; itemRow < matrix.length - 1; itemRow++) {
-        if (col[itemRow] == NaN) break;
+        if (col[itemRow] == "NaN") {
+          console.log("have NaN");
+        };
         column.push(matrix[itemRow][col]);
+        //console.log(col[itemRow]);
       }
       return column;
     }
 
     function dodrop(event) {
       let dt = event.dataTransfer;
-      let files = dt.files;
+      //console.log(dt);
+      files = dt.files;
+      //console.log(files[0].name);
+
       let count = files.length;
       //output("File Count: " + count + "\n");
 
       for (let i = 0; i < files.length; i++) {
         let reader = new FileReader();
-        reader.readAsText(files[i]);
+        reader.readAsText(files[i]); //читаем файл как текст
+        //console.log(reader);
         reader.onload = function () {
-          var data = [];
+          var data = []; //добавляем в массив имена точек
+          //console.log(reader);
+          console.log(data);
           var csv = reader.result;
-          var rows = csv.split(/\r\n|\n/);
+          compensated.textContent = csv;
+          //console.log(compensated.textContent);
+          var rows = csv.split(/\r\n|\n/); //разделяем csv файл на строки
           for (var i = 0; i < rows.length; i++) {
             var cells = rows[i].split(";").splice(
-              3); //преобразоваываем каждую сторку в массив и убираем не нужные жанные
-            //console.log(cells[i]);
+              3); //преобразоваываем каждую сторку в массив и убираем не нужные данные
+            //console.log(cells);           
             data.push(cells);
           }
+          //console.log('data' + data[1]);
 
           var points = data[0];
           var value = [];
           for (var stringMeas = 0; stringMeas < data.length; stringMeas++) {
             var curentGetCol = getCol(data, stringMeas);
-            let minValue = Math.min.apply(null, curentGetCol);
-            let maxValue = Math.max.apply(null, curentGetCol);
+            let minValue = Math.min.apply(null, curentGetCol.filter(function(n) { return !isNaN(n); }));
+            //console.log(minValue);
+            let maxValue = Math.max.apply(null, curentGetCol.filter(function(n) { return !isNaN(n); }));
+            //console.log(maxValue);
             let currentCalc = (maxValue - minValue);
             //console.log(currentCalc);
             value.push(currentCalc.toFixed(2));
@@ -111,12 +138,14 @@
 
 
 
-          for (var item = 0; item < data.length; item++) { //data[0] колличество точек
+          for (var item = 0; item < data[0].length; item++) { //data[0] колличество точек
+            var limit = 0.15;
             range.push(points[item]);
             range[item] = [];
             range[item].push(Number(value[item]));
             //console.log(Number(value[item]));
             range[item].push(points[item]);
+            range[item].push(limit);
 
           }
           range.sort(RecordSort);
@@ -128,37 +157,59 @@
           }
           for (var i = 0; i < range.length; i++)
             sortRange.push(range[i]);
-          console.log(sortRange);
-          var option = {
-            grid: {
-              bottom: 200,
-              width: 'auto'
-            },
-            dataset: {
-              dimensions: ['rangeValue', 'namePoint'],
-              source: sortRange
-            },
-            xAxis: {
-              type: 'category',
-              axisLabel: {
-                interval: 0,
-                rotate: 90
+          //console.log(sortRange);
+          var
+            option = {
+              dataset: [{
+                id: 'dataset_raw',
+                dimensions: ['valueRange', 'namePoint', 'limit'],
+                source: sortRange
+              }, ],
+              title: {
+                text: 'V-LAB'
               },
-              margin: 50
-            },
-            yAxis: {},
-            series: {
-              label: {
-                show: true,
-                rotate: 90
+              tooltip: {
+                trigger: 'axis'
               },
-              type: 'bar',
-              encode: {
-                x: 'namePoint',
-                y: 'rangeValue'
-              }
-            }
-          };
+              legend: {
+                data: ['uncompensated', 'compensated']
+              },
+              xAxis: {
+                type: 'category',
+                nameLocation: 'middle',
+              },
+              yAxis: {
+                name: 'value'
+              },
+              series: [{
+                  name: 'uncompensated',
+                  type: 'bar',
+                  showSymbol: false,
+                  encode: {
+                    x: 'namePoint',
+                    y: 'valueRange'
+                  }
+                }, {
+                  name: 'compensated',
+                  type: 'bar',
+                  showSymbol: false,
+                  encode: {
+                    x: 'namePoint',
+                    y: 'valueRange'
+                  }
+                },
+                {
+                  encode: {
+                    x: 'namePoint',
+                    y: 'limit'
+                  },
+                  type: 'line',
+                  color: 'red',
+                  showSymbol: false
+                }
+              ]
+            };
+
           option && myChart.setOption(option);
         }
         reader.onerror = function () {
@@ -168,33 +219,6 @@
       }
     };
 
-    // var data = [];
-    // var csv = dodrop.result;
-    // var rows = csv.split("\n");
-
-    // for (var i = 0; i < rows.length; i++) {
-    //   var cells = rows[i].split(",");
-    //   data.push(cells);
-    // }
-
-
-    //reading file
-    // var doc = document.getElementById("doc");
-    // document.querySelector("button").addEventListener('click', function () {
-    //   let file = document.getElementById("file").files[0];
-    //   let reader = new FileReader();
-    //   reader.readAsText(file); // читаем файл как текст
-    //   reader.onload = function () {
-    //     //doc.textContent = parse(reader.result); //записываем в виде текста файл
-    //     doc.textContent = reader.result; //записываем в виде текста файл
-    //     //console.log(reader.result);
-    //     console.log(reader.result);
-    //   }
-    //   reader.onerror = function () {
-    //     console.log(parse(reader.error));
-    //   }
-    // });
-    // based on prepared DOM, initialize echarts instance
 
     var app = {};
 
@@ -291,7 +315,7 @@
         type: 'category',
         axisLabel: {
           interval: 0,
-          rotate: 30
+          rotate: 90
         },
       },
       yAxis: {},
@@ -342,7 +366,7 @@
         },
         {
           type: 'slider',
-          show: true,
+          show: false,
           yAxisIndex: [0],
           left: '1%',
           start: 0,
@@ -366,12 +390,6 @@
 
     option && myChart.setOption(option);
   </script>
-
-<input type="file" name="readable" accept=".csv" />
-
-<div id="preview">123</div>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <script>
     // Элемент для выбора файлов.
@@ -414,7 +432,6 @@
       let table = document.createElement('table');
       let thead = document.createElement('thead');
       let tbody = document.createElement('tbody');
-      console.log(data);
 
       // Добавим класс к таблице.
       table.classList.add('table');
