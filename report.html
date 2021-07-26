@@ -85,9 +85,9 @@
     function getCol(matrix, col) {
       var column = [];
       for (var itemRow = 1; itemRow < matrix.length - 1; itemRow++) {
-        if (col[itemRow] == "NaN") {
-          console.log("have NaN");
-        };
+        // if (col[itemRow] == "NaN") {
+        //   console.log("have NaN");
+        // };
         column.push(matrix[itemRow][col]);
         //console.log(col[itemRow]);
       }
@@ -98,7 +98,7 @@
       let dt = event.dataTransfer;
       //console.log(dt);
       files = dt.files;
-      //console.log(files[0].name);
+      console.log(typeof files[0].name);
 
       let count = files.length;
       //output("File Count: " + count + "\n");
@@ -110,9 +110,17 @@
         reader.onload = function () {
           var data = []; //добавляем в массив имена точек
           //console.log(reader);
-          console.log(data);
+          //console.log(data);
           var csv = reader.result;
-          compensated.textContent = csv;
+          var currentFile = files[0].name
+          if(RegExp(/comp/i).test(currentFile)){
+            compensated.textContent = csv;
+            console.log(currentFile);
+          } else if (RegExp(/without/i).test(currentFile)) {
+            uncompensated.textContent = csv;
+            console.log(csv);
+          }
+          
           //console.log(compensated.textContent);
           var rows = csv.split(/\r\n|\n/); //разделяем csv файл на строки
           for (var i = 0; i < rows.length; i++) {
