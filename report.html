@@ -14,10 +14,22 @@
   ondragover="event.stopPropagation(); event.preventDefault();" ondrop="event.stopPropagation(); event.preventDefault();
 dodrop(event);">
 
-  <div id="svgwrap">
-    <img src="/image3.svg" alt="">
+  <div id="svgwrap" class="container">
+    <img
+src="data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw
+AAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapyuvUUlvONmOZtfzgFz
+ByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSp
+a/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJl
+ZeGl9i2icVqaNVailT6F5iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uis
+F81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97Vriy/Xl4/f1cf5VWzXyym7PH
+hhx4dbgYKAAA7"
+height="16px" width="16px" alt="какая-то картинка" />
+   <img src="/image3.svg" alt="">
+    <a id="todownloadComp">Download compensation</a>
+    <a id="todownloadUmcomp">Donwload uncompansation</a>
   </div>
   <h2 id="nameTest"></h2>
+  
   <div class="open-popup container">
     <table style="border: 2px solid #000;">
       <tbody>
@@ -206,7 +218,7 @@ dodrop(event);">
     </form>
   </div>
 
-  <div id="main" style="height:500px;">
+  <div id="main" style="height:500px; width: 100%;">
   </div>
 
   <input id="csvfile" type="file" name="readable" accept=".csv" />
@@ -227,7 +239,7 @@ dodrop(event);">
       color: #000;
       background-color: #fff;
       padding: 10px;
-      transition: 0.5s all;
+      text-decoration: none;
     }
 
     @media print {
@@ -390,7 +402,7 @@ dodrop(event);">
       color: #2982ff;
     }
 
-    .popup button {
+    button {
       margin-top: 15px;
       width: 100%;
       height: 45px;
@@ -399,21 +411,59 @@ dodrop(event);">
       justify-content: center;
       color: #fff;
       font-size: 18px;
-      border: 2px solid #2982ff;
-      background: #2982ff;
+      border: 2px solid #030303;
+      background: #696969;
       cursor: pointer;
       text-transform: uppercase;
       transition: 0.5s all;
       border-radius: 5px;
     }
 
-    .popup button:hover {
-      background: #fff;
-      color: #2982ff;
+    a {
+      margin: 10px auto;
+      width: 200px;
+      height: 25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      border: 2px solid #030303;
+      background: #696969;
+      cursor: pointer;
+      text-transform: uppercase;
       transition: 0.5s all;
+      border-radius: 5px;
+      padding: 5px;
     }
+
+    a:hover,
+    button:hover {
+      background: #fff;
+      color: #888585;
+      transition: 0.5s all;
+      text-decoration: none;
+    }
+    a:active, a:link, a:visited {
+      text-decoration: none;
+    }
+
   </style>
   <script>
+    //Download file
+    document.getElementById('todownloadComp').onclick = function () {
+      let text = compensated.textContent;
+      let myData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(text);
+      this.href = myData;
+      this.download = 'compensaited.csv';
+    }
+    document.getElementById('todownloadUmcomp').onclick = function () {
+      let text = uncompensated.textContent;
+      let myData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(text);
+      this.href = myData;
+      this.download = 'without.csv';
+    }
+
     //POPUP
     let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
     let popup = document.querySelector('.popup'); // Само окно
@@ -788,21 +838,12 @@ dodrop(event);">
         bottom: 200,
       },
       dataZoom: [{
-          type: 'slider',
-          show: true,
-          xAxisIndex: [0],
-          start: 0,
-          end: 25
-        },
-        {
-          type: 'slider',
-          show: false,
-          yAxisIndex: [0],
-          left: '1%',
-          start: 0,
-          end: 100
-        }
-      ]
+        type: 'slider',
+        show: true,
+        xAxisIndex: [0],
+        start: 0,
+        end: 25
+      }]
 
     };
     option && myChart.setOption(option);
