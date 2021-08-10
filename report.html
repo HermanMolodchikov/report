@@ -510,11 +510,11 @@ dodrop(event);">
         </tr>
         <tr>
           <td>Mismeasurements</td>
-          <td id="misMeas"></td>
+          <td id="misMeas">0</td>
         </tr>
         <tr>
           <td>No measurement directions</td>
-          <td id="noMeasDir"></td>
+          <td id="noMeasDir">0</td>
         </tr>
       </tbody>
     </table>
@@ -569,6 +569,8 @@ dodrop(event);">
         </tr>
       </tbody>
     </table>
+    <div id="main_2" style="height: auto; width: 50%;">
+    </div>
   </div>
 
 
@@ -668,8 +670,8 @@ dodrop(event);">
 
     .container {
       display: -webkit-flex;
-      -webkit-justify-content: center;
-      justify-content: center;
+      -webkit-justify-content: left;
+      justify-content: left;
       display: flex;
       -webkit-flex-wrap: wrap;
       flex-wrap: wrap;
@@ -904,7 +906,6 @@ dodrop(event);">
     var sortRange = [];
     var compensatedRange = [];
     var files;
-    var forZoom;
 
     /*GET SEND form*/
     const form = document.getElementById('formElem');
@@ -935,8 +936,8 @@ dodrop(event);">
       getLocation = form.querySelector('[name="Location"]'),
       getProject = form.querySelector('[name="Project"]'),
       getControlDir = form.querySelector('[name="Directions"]'),
-      getAccept = form.querySelector('[name="Accept"]')
-    sendFormButton = document.getElementById('sendFormButton');
+      getAccept = form.querySelector('[name="Accept"]'),
+      sendFormButton = document.getElementById('sendFormButton');
 
     sendFormButton.addEventListener('click', function () {
       vendor.textContent = getVendor.value;
@@ -979,6 +980,7 @@ dodrop(event);">
         }
       }
       option && myChart.setOption(option);
+
       //console.log(comp);
       //console.log(comp);
     }
@@ -1100,6 +1102,7 @@ dodrop(event);">
           }
           if (files.length == 1) {
             option && myChart.setOption(option);
+            option2 && myChart2.setOption(option2);
           }
         }
       }
@@ -1109,7 +1112,7 @@ dodrop(event);">
     var app = {};
 
     var chartDom = document.getElementById('main');
-    var myChart = echarts.init(chartDom);
+    var myChart = echarts.init(chartDom);;
     var option;
 
     var posList = [
@@ -1291,17 +1294,64 @@ dodrop(event);">
       },
       grid: {
         bottom: 160,
+        left: '5%',
+        right: '2%',
+        top: '10%',
       },
-      dataZoom: [{
-        type: 'slider',
+      dataZoom: {
+        type: 'inside',
         show: true,
         xAxisIndex: [0],
         start: 0,
         end: 10
-      }]
+      }
 
     };
     option && myChart.setOption(option);
+  </script>
+
+  <script>
+    var chartDom2 = document.getElementById('main_2');
+    var myChart2 = echarts.init(chartDom2);
+    var option2;
+
+    option2 = {
+      dataset: [{
+        dimensions: ['valueRange', 'namePoint', 'limit', 'valueCompensated'],
+        source: sortRange
+      }, ],
+      title: {
+        text: ''
+      },
+      xAxis: {},
+      yAxis: {
+        type: 'category'
+      },
+      series: [{
+        type: 'bar',
+        encode: {
+          // Map the "amount" column to X axis.
+          x: 'valueRange',
+          // Map the "product" column to Y axis
+          y: 'namePoint'
+        }
+      }],  
+      grid: {
+        bottom: 20,
+        left: '25%',
+        right: '2%',
+        top: '15%',
+      }, 
+      dataZoom: {
+        type: 'inside',
+        show: true,
+        yAxisIndex: [0],
+        start: 0,
+        end: 10
+      }
+    };
+
+    option2 && myChart2.setOption(option2);
   </script>
 
   <script>
