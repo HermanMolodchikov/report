@@ -602,7 +602,10 @@ dodrop(event);">
         </div>
       </label>
       <label>
-        <input name="Directions" value="X Y Z"></input>
+        <select name="Directions" id="">
+          <option value="X Y Z">X Y Z</option>
+          <option value="X Y Z XV YV ZV">X Y Z XV YV ZV</option>
+        </select>
         <div class="label__text">
           Controlled directions
         </div>
@@ -906,6 +909,13 @@ dodrop(event);">
     var sortRange = [];
     var compensatedRange = [];
     var files;
+    var countDeviation = [
+      ['0.00, 0.10'],
+      ['0.10, 0.15'],
+      ['0.15, 0.20'],
+      ['0.20, 0.25'],
+      ['>25']
+    ];
 
     /*GET SEND form*/
     const form = document.getElementById('formElem');
@@ -931,6 +941,12 @@ dodrop(event);">
       statusMisMeas = document.getElementById('statusMisMeas'),
       trNoMeasDir = document.getElementById('trNoMeasDir'),
       statusNoMeasDir = document.getElementById('statusNoMeasDir'),
+      devMin = document.getElementById('DevMin'),
+      devMax = document.getElementById('DevMax'),
+      devAverage = document.getElementById('DevAverage'),
+      dirCount = document.getElementById('DirCount'),
+
+
       getVendor = form.querySelector('[name="Vendor"]'),
       getType = form.querySelector('[name="Type"]'),
       getLocation = form.querySelector('[name="Location"]'),
@@ -968,8 +984,10 @@ dodrop(event);">
         sortRange.push(range[i]);
       }
       writeInArray(comp, data2, compensatedRange);
+
+      addCountDeviation(sortRange);
       //compensatedRange.sort(RecordSort);
-      console.log(data);
+      //console.log(data);
       for (let i = 0; i < sortRange.length; i++) {
         for (let j = 0; j < compensatedRange.length; j++) {
           if (compensatedRange[j][1] === sortRange[i][1]) {
@@ -981,21 +999,70 @@ dodrop(event);">
       }
       option && myChart.setOption(option);
 
+      option2 && myChart2.setOption(option2);
+
       //console.log(comp);
       //console.log(comp);
     }
 
     function getCol(matrix, col) {
       var column = [];
-      for (var itemRow = 1; itemRow < matrix.length - 1; itemRow++) {
+      for (var itemRow = 0; itemRow < matrix.length; itemRow++) {//перебираем двумерный массив по количеству вложенных массивов
         // if (col[itemRow] == "NaN") {
         //   console.log("have NaN");
         // };
-        column.push(matrix[itemRow][col]);
+        column.push(matrix[itemRow][col]);// пушим в колонку каждый полученный эллемент
         //console.log(col[itemRow]);
       }
+      //console.log(column)
       return column;
+      
     }
+
+    function addCountDeviation(getArr) {
+      var toTen = [],
+        toFifteen = [],
+        toTwenty = [],
+        toTwentyFive = [],
+        moreTwentyFive = [],
+        allDevitaion = [];
+
+      //console.log(getArr);
+      dirCount.textContent = getArr.length;
+      devMin.textContent = getArr[getArr.length - 1][0];
+      devMax.textContent = getArr[0][0];
+      trAccCrit.textContent = getArr[0][0];
+
+      for (let i = 0; i < getArr.length; i++) {
+        if (getArr[i][0] <= 0.10) {
+          toTen.push(getArr[i][0]);
+        };
+        if (getArr[i][0] > 0.10 && getArr[i][0] <= 0.15) {
+          toFifteen.push(getArr[i][0]);
+        };
+        if (getArr[i][0] > 0.15 && getArr[i][0] <= 0.20) {
+          toTwenty.push(getArr[0]);
+        };
+        if (getArr[i][0] > 0.20 && getArr[i][0] <= 0.25) {
+          toTwentyFive.push(getArr[i][0]);
+        };
+        if (getArr[i][0] > 0.25) {
+          moreTwentyFive.push(getArr[i][0]);
+        }
+      }
+      allDevitaion.push(toTen.length);
+      allDevitaion.push(toFifteen.length);
+      allDevitaion.push(toTwenty.length);
+      allDevitaion.push(toTwentyFive.length);
+      allDevitaion.push(moreTwentyFive.length);
+      //console.log(allDevitaion);
+      for (var count = 0; count < allDevitaion.length; count++) {
+        countDeviation[count].push(allDevitaion[count]);
+
+      }
+      //console.log(countDeviation);
+    }
+
 
     function writeInArray(csv, data, pushToArr) {
       var rows = csv.split(/\r\n|\n/); //разделяем csv файл на строки
@@ -1009,23 +1076,46 @@ dodrop(event);">
           3
         ); //преобразоваываем каждую сторку в массив и убираем не нужны первые три значения номер модели, дата, план
         data.push(cells);
+        //console.log(cells);       
       }
-      var points = data[0];
-      forZoom = Math.floor(100 / (data[0].length / 40));
-      console.log(forZoom);
 
+      var points = data[0];
+      var countDevAve = 0;
+      var numberMeasurements = 0;
+      //console.log(points);
+      var forZoom = Math.floor(100 / (data[0].length / 40));
+      //console.log(forZoom);
       var value = [];
+      console.log(points.length);
       for (var stringMeas = 0; stringMeas < points.length; stringMeas++) {
-        var curentGetCol = getCol(data, stringMeas);
-        let minValue = Math.min.apply(null, curentGetCol.filter(function (n) {
+        var currentGetCol = getCol(data, stringMeas);
+        
+        numberMeasurements += stringMeas;
+        //console.log(currentGetCol);
+        for (let i = 1; i < currentGetCol.length - 1; i++) {
+         //if (curentGetCol[i] == "NaN") continue;
+          //countDevAve += Number(curentGetCol[i]);
+          countDevAve += Number(currentGetCol[i]);
+          //console.log(curentGetCol[i]);
+        };
+        let minValue = Math.min.apply(null, currentGetCol.filter(function (n) {
           return !isNaN(n);
         }));
-        let maxValue = Math.max.apply(null, curentGetCol.filter(function (n) {
+        let maxValue = Math.max.apply(null, currentGetCol.filter(function (n) {
           return !isNaN(n);
         }));
         let currentCalc = (maxValue - minValue);
         value.push(currentCalc.toFixed(2));
       }
+      console.log(value);
+
+      //devAverage.textContent = countDevAve / numberMeasurements;
+      console.log(numberMeasurements + '   Numbermeas');
+
+      //console.log(data[0].length);
+      //console.log(data[0]);
+      //console.log(countDevAve);
+
       for (var item = 0; item < data[0]
         .length; item++
       ) { //data[0] колличество точек. Перебираем по длине вложеного первого массива . то есть по колличеству точек
@@ -1038,6 +1128,7 @@ dodrop(event);">
       }
     };
 
+
     function RecordSort(a, b) { //функция для сортировки массива по убыванию 
       if (a[0] < b[0]) return 1;
       else if (a[0] > b[0]) return -1;
@@ -1048,7 +1139,7 @@ dodrop(event);">
       let dt = event.dataTransfer;
       //console.log(dt);
       let files = dt.files;
-      console.log(files);
+      //console.log(files);
       let count = files.length;
       //output("File Count: " + count + "\n");
       for (let i = 0; i < files.length; i++) {
@@ -1057,7 +1148,7 @@ dodrop(event);">
         //reader.readAsBinaryString(files[i]);
         //console.log(files[i].name);
         var currentFile = files[i].name;
-        console.log(currentFile);
+        //console.log(currentFile);
         reader.onload = function () {
           var data = []; //добавляем в массив имена точек
           var data2 = []; //добавляем в массив имена точек
@@ -1077,8 +1168,9 @@ dodrop(event);">
             for (var i = 0; i < range.length; i++) {
               sortRange.push(range[i]); // запушиваем отсортированые значения в масиив
             }
+            addCountDeviation(sortRange);
           }
-          console.log(sortRange);
+          //console.log(sortRange);
           if (RegExp(/comp/i).test(currentFile)) {
             compensated.textContent = csv;
             writeInArray(csv, data2, compensatedRange);
@@ -1246,6 +1338,17 @@ dodrop(event);">
           encode: {
             x: 'namePoint',
             y: 'valueRange'
+          },
+          label: {
+            show: true,
+            position: 'top',
+            textStyle: {
+              fontSize: 8,
+              fontWeight: 900,
+              lineHeight: 0,
+            },
+            interval: 0,
+            rotate: 60,
           }
         }, {
           name: 'compensated',
@@ -1254,6 +1357,17 @@ dodrop(event);">
           encode: {
             x: 'namePoint',
             y: 'valueCompensated'
+          },
+          label: {
+            show: true,
+            position: 'top',
+            textStyle: {
+              fontSize: 8,
+              fontWeight: 900,
+              lineHeight: 0,
+            },
+            interval: 0,
+            rotate: 60,
           }
         },
         {
@@ -1317,8 +1431,8 @@ dodrop(event);">
 
     option2 = {
       dataset: [{
-        dimensions: ['valueRange', 'namePoint', 'limit', 'valueCompensated'],
-        source: sortRange
+        dimensions: ['rangeDev', 'deviation'],
+        source: countDeviation
       }, ],
       title: {
         text: ''
@@ -1331,23 +1445,20 @@ dodrop(event);">
         type: 'bar',
         encode: {
           // Map the "amount" column to X axis.
-          x: 'valueRange',
+          x: 'deviation',
           // Map the "product" column to Y axis
-          y: 'namePoint'
+          y: 'rangeDev'
+        },
+        label: {
+          show: true,
+          position: 'right'
         }
-      }],  
+      }],
       grid: {
         bottom: 20,
         left: '25%',
-        right: '2%',
+        right: '10%',
         top: '15%',
-      }, 
-      dataZoom: {
-        type: 'inside',
-        show: true,
-        yAxisIndex: [0],
-        start: 0,
-        end: 10
       }
     };
 
