@@ -2,11 +2,11 @@
 <html>
 
 <head>
-  <meta chrset="UTF-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="/svg-editor-image.svg" />
-  <script src="/echarts.js"></script>
+  <script src="./echarts.js"></script>
   <title>V-Labs</title>
 </head>
 
@@ -446,8 +446,7 @@ dodrop(event);">
     lH0JoX21tbYnJAfjJZLKmv7//Kk3Tn4Tg+trY2Bg1m803g8HgnrZiCCF0kMElIa2JpqenDzU3NztBa
     M4KACWVSnVFCCxpqVSSYF0VQuigl4nU5uZmpXYrHA4f7evrs9lsNpxdIYT2+A495M0v0+N71AAAAAB
     JRU5ErkJggg==" alt="" />
-    <a id="todownloadComp" class="noprint">Download compensation</a>
-    <a id="todownloadUmcomp" class="noprint">Donwload uncompansation</a>
+
   </div>
   <h2 id="nameTest"></h2>
 
@@ -631,7 +630,8 @@ dodrop(event);">
       <button id="sendFormButton">Apply</button>
     </div>
   </div>
-
+  <a id="todownloadComp" class="noprint">Download compensated</a>
+  <a id="todownloadUncomp" class="noprint">Donwload uncompansated</a>
   <div id="main" style="height:500px; width: 100%;">
   </div>
 
@@ -871,6 +871,15 @@ dodrop(event);">
     a:visited {
       text-decoration: none;
     }
+
+    #todownloadComp, #todownloadUncomp{
+      font-size: 10px;
+      padding: 2px;
+      line-height: 10px;
+      display: inline;
+    }   
+    
+  
   </style>
 
   <script>
@@ -881,7 +890,7 @@ dodrop(event);">
       this.href = myData;
       this.download = 'compensaited.csv';
     }
-    document.getElementById('todownloadUmcomp').onclick = function () {
+    document.getElementById('todownloadUncomp').onclick = function () {
       let text = uncompensated.textContent;
       let myData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(text);
       this.href = myData;
@@ -930,9 +939,9 @@ dodrop(event);">
     ];
 
     var colorFailedBack = "#FF7F50",
-        colorPassedBack = "#9ACD32";
-        colorFailed = "#8B0000";
-        colorPassed = "#006400";
+      colorPassedBack = "#9ACD32",
+      colorFailed = "#8B0000",
+      colorPassed = "#006400";
 
     /*GET SEND form*/
     const form = document.getElementById('formElem');
@@ -971,7 +980,7 @@ dodrop(event);">
       getControlDir = form.querySelector('[name="Directions"]'),
       getAccept = form.querySelector('[name="Accept"]'),
       getMismeasurements = form.querySelector('[name="Mismeasurements"]'),
-      getNoMeasurementDirections= form.querySelector('[name="NoMeasurementDirections"]'),
+      getNoMeasurementDirections = form.querySelector('[name="NoMeasurementDirections"]'),
       sendFormButton = document.getElementById('sendFormButton');
 
     sendFormButton.addEventListener('click', function () {
@@ -1029,58 +1038,60 @@ dodrop(event);">
 
     function getCol(matrix, col) {
       var column = [];
-      for (var itemRow = 0; itemRow < matrix.length; itemRow++) {//перебираем двумерный массив по количеству вложенных массивов
+
+      for (var itemRow = 0; itemRow < matrix
+        .length; itemRow++) { //перебираем двумерный массив по количеству вложенных массивов
         // if (col[itemRow] == "NaN") {
         //   console.log("have NaN");
         // };
-        column.push(matrix[itemRow][col]);// пушим в колонку каждый полученный эллемент
-        //console.log(col[itemRow]);
+        column.push(matrix[itemRow][col]); // пушим в колонку каждый полученный эллемент
       }
-      //console.log(column)
+      //console.log(matrix[0][col]);
+      //console.log(column);
       return column;
-      
+
     }
 
     //set status  
-    function setStatus () {
-    if (controlDir.textContent === trContDir.textContent) {
-      statusContDir.textContent = "passed";
-      statusContDir.style.color = colorPassed;
-      statusContDir.style.backgroundColor = colorPassedBack;
-    } else {
-      statusContDir.textContent = "failed";
-      statusContDir.style.color = colorFailed;
-      statusContDir.style.backgroundColor = colorFailedBack;
+    function setStatus() {
+      if (controlDir.textContent === trContDir.textContent) {
+        statusContDir.textContent = "passed";
+        statusContDir.style.color = colorPassed;
+        statusContDir.style.backgroundColor = colorPassedBack;
+      } else {
+        statusContDir.textContent = "failed";
+        statusContDir.style.color = colorFailed;
+        statusContDir.style.backgroundColor = colorFailedBack;
+      };
+      if (acceptCrit.textContent.match(/\d\.\d{1,5}/ig) == trAccCrit.textContent) {
+        statusAccCrit.textContent = "passed";
+        statusAccCrit.style.color = colorPassed;
+        statusAccCrit.style.backgroundColor = colorPassedBack;
+      } else {
+        statusAccCrit.textContent = "failed";
+        statusAccCrit.style.color = colorFailed;
+        statusAccCrit.style.backgroundColor = colorFailedBack;
+        console.log(acceptCrit.textContent.match(/\d\.\d{1,5}/ig) + " " + trAccCrit.textContent);
+      };
+      if (misMeas.textContent === trMisMeas.textContent) {
+        statusMisMeas.textContent = "passed";
+        statusMisMeas.style.color = colorPassed;
+        statusMisMeas.style.backgroundColor = colorPassedBack;
+      } else {
+        statusMisMeas.textContent = "failed";
+        statusMisMeas.style.color = colorFailed;
+        statusMisMeas.style.backgroundColor = colorFailedBack;
+      };
+      if (noMeasDir.textContent === trNoMeasDir.textContent) {
+        statusNoMeasDir.textContent = "passed";
+        statusNoMeasDir.style.color = colorPassed;
+        statusNoMeasDir.style.backgroundColor = colorPassedBack;
+      } else {
+        statusNoMeasDir.textContent = "failed";
+        statusNoMeasDir.style.color = colorFailed;
+        statusNoMeasDir.style.backgroundColor = colorFailedBack;
+      }
     };
-    if (acceptCrit.textContent.match(/\d\.\d{1,5}/ig) == trAccCrit.textContent) {
-      statusAccCrit.textContent = "passed";
-      statusAccCrit.style.color = colorPassed;
-      statusAccCrit.style.backgroundColor = colorPassedBack;
-    } else {
-      statusAccCrit.textContent = "failed";
-      statusAccCrit.style.color = colorFailed;
-      statusAccCrit.style.backgroundColor = colorFailedBack;
-      console.log(acceptCrit.textContent.match(/\d\.\d{1,5}/ig) + " " + trAccCrit.textContent);
-    };
-    if (misMeas.textContent === trMisMeas.textContent) {
-      statusMisMeas.textContent = "passed";
-      statusMisMeas.style.color = colorPassed;
-      statusMisMeas.style.backgroundColor = colorPassedBack;
-    } else {
-      statusMisMeas.textContent = "failed";
-      statusMisMeas.style.color = colorFailed;
-      statusMisMeas.style.backgroundColor = colorFailedBack;
-    };
-    if (noMeasDir.textContent === trNoMeasDir.textContent) {
-      statusNoMeasDir.textContent = "passed";
-      statusNoMeasDir.style.color = colorPassed;
-      statusNoMeasDir.style.backgroundColor = colorPassedBack;
-    } else {
-      statusNoMeasDir.textContent = "failed";
-      statusNoMeasDir.style.color = colorFailed;
-      statusNoMeasDir.style.backgroundColor = colorFailedBack;
-    }
-  };
 
     function addCountDeviation(getArr) {
       var toTen = [],
@@ -1123,8 +1134,6 @@ dodrop(event);">
         countDeviation[count].push(allDevitaion[count]);
 
       }
-      
-
       setStatus();
       //console.log(countDeviation);
     }
@@ -1142,28 +1151,29 @@ dodrop(event);">
           3
         ); //преобразоваываем каждую сторку в массив и убираем не нужны первые три значения номер модели, дата, план
         data.push(cells);
-        //console.log(cells);       
       }
-
+      //console.log(data[0]);
       var points = data[0];
+      var value = [];
       var countDevAve = 0;
       var numberMeasurements = 0;
+      var limit = acceptCrit.textContent.match(/\d\.\d{1,5}/ig);
       //console.log(points);
       var forZoom = Math.floor(100 / (data[0].length / 40));
-      //console.log(forZoom);
-      var value = [];
-      console.log(points.length);
+      //console.log(forZoom);     
+      //console.log(points.length);
       for (var stringMeas = 0; stringMeas < points.length; stringMeas++) {
+        // if (RegExp(/.x\b|.y\b|.z\b/gim).test(points[stringMeas])) {
+        //console.log(points[stringMeas]);
         var currentGetCol = getCol(data, stringMeas);
-        
         numberMeasurements += stringMeas;
-        //console.log(currentGetCol);
         for (let i = 1; i < currentGetCol.length - 1; i++) {
-         //if (curentGetCol[i] == "NaN") continue;
+          //console.log(currentGetCol[i]);
+          //if (curentGetCol[i] == "NaN") continue;
           //countDevAve += Number(curentGetCol[i]);
           countDevAve += Number(currentGetCol[i]);
-          //console.log(curentGetCol[i]);
         };
+
         let minValue = Math.min.apply(null, currentGetCol.filter(function (n) {
           return !isNaN(n);
         }));
@@ -1172,28 +1182,23 @@ dodrop(event);">
         }));
         let currentCalc = (maxValue - minValue);
         value.push(currentCalc.toFixed(2));
+
       }
-      //console.log(value);
-
-      //devAverage.textContent = countDevAve / numberMeasurements;
-      //console.log(numberMeasurements + '   Numbermeas');
-
-      //console.log(data[0].length);
-      //console.log(data[0]);
-      //console.log(countDevAve);
-
+      //console.log(pushToArr);
+      //if (RegExp(/.x\b|.y\b|.z\b/gim).test(data[0][item])) 
       for (var item = 0; item < data[0]
         .length; item++
       ) { //data[0] колличество точек. Перебираем по длине вложеного первого массива . то есть по колличеству точек
-        var limit = acceptCrit.textContent.match(/\d\.\d{1,5}/ig);
-        pushToArr.push(points[item]);
+        //pushToArr.push(points[item]);
+        //console.log(points[item]);
         pushToArr[item] = []; //добавление вложеного массива
         pushToArr[item].push(Number(value[item])); //пушим в текущщий массив вычесленной значение рэнджа
         pushToArr[item].push(points[item]) // пушим название точек после каждого соответсвующего значения
-        pushToArr[item].push(limit); //пушим в каждую точку лимит
-      }
-    };
+        pushToArr[item].push(Number(limit)); //пушим в каждую точку лимит
 
+      }
+      //console.log(pushToArr);
+    };
 
     function RecordSort(a, b) { //функция для сортировки массива по убыванию 
       if (a[0] < b[0]) return 1;
@@ -1222,29 +1227,27 @@ dodrop(event);">
           //console.log(data);
           var csv = reader.result;
           if (RegExp(/without/i).test(currentFile)) {
-            data = [];
-            uncompensated.textContent = null;
-            compensated.textContent = null;
+            //uncompensated.textContent = null;
+            //compensated.textContent = null;
             uncompensated.textContent = csv;
             writeInArray(csv, data, range);
             //console.log(uncompensated.textcontent);
-            //console.log(data);
+            console.log("uncomp");
+            console.log(csv);
             //console.log(currentFile);
             range.sort(RecordSort); // сортируем массив по первым значениям вложеных массивов
             for (var i = 0; i < range.length; i++) {
-              sortRange.push(range[i]); // запушиваем отсортированые значения в масиив
+              if (RegExp(/.x\b|.y\b|.z\b/gim).test(range[i][1])) {
+                sortRange.push(range[i]); // запушиваем отсортированые значения в масиив
+              }
             }
+            //console.log(sortRange);
             addCountDeviation(sortRange);
           }
           //console.log(sortRange);
           if (RegExp(/comp/i).test(currentFile)) {
             compensated.textContent = csv;
             writeInArray(csv, data2, compensatedRange);
-            //compensatedRange.sort(RecordSort);
-            //console.log(csv);
-            // if( sortRange.length !== compensatedRange.length) {
-            //   alert ("Разное колличество дирекшинов!!!");
-            // }
             for (let i = 0; i < sortRange.length; i++) { // перебираемпо длине отсортированного массива 
               for (let j = 0; j < compensatedRange.length; j++) { //перебираем по длине откомпенсированого массива
                 if (compensatedRange[j][1] === sortRange[i][1]) {
@@ -1266,7 +1269,7 @@ dodrop(event);">
       }
       //console.log(sortRange); 
     };
-    
+
 
     var app = {};
 
