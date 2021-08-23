@@ -872,14 +872,13 @@ dodrop(event);">
       text-decoration: none;
     }
 
-    #todownloadComp, #todownloadUncomp{
+    #todownloadComp,
+    #todownloadUncomp {
       font-size: 10px;
       padding: 2px;
       line-height: 10px;
       display: inline;
-    }   
-    
-  
+    }
   </style>
 
   <script>
@@ -1220,20 +1219,23 @@ dodrop(event);">
         //console.log(files[i].name);
         var currentFile = files[i].name;
         //console.log(currentFile);
-        reader.onload = function () {
-          var data = []; //добавляем в массив имена точек
-          var data2 = []; //добавляем в массив имена точек
-          //console.log(reader);
-          //console.log(data);
-          var csv = reader.result;
-          if (RegExp(/without/i).test(currentFile)) {
+
+        //добавляем в массив имена точек
+        //добавляем в массив имена точек
+        //console.log(reader);
+        //console.log(data);
+
+        if (RegExp(/without/i).test(currentFile)) {
+          reader.onload = function () {
+            var data = [];
+            var csv = reader.result;
             //uncompensated.textContent = null;
             //compensated.textContent = null;
             uncompensated.textContent = csv;
             writeInArray(csv, data, range);
             //console.log(uncompensated.textcontent);
             console.log("uncomp");
-            console.log(csv);
+            //console.log(csv);
             //console.log(currentFile);
             range.sort(RecordSort); // сортируем массив по первым значениям вложеных массивов
             for (var i = 0; i < range.length; i++) {
@@ -1244,10 +1246,16 @@ dodrop(event);">
             //console.log(sortRange);
             addCountDeviation(sortRange);
           }
-          //console.log(sortRange);
-          if (RegExp(/comp/i).test(currentFile)) {
+        }
+        //console.log(sortRange);
+        if (RegExp(/comp/i).test(currentFile)) {
+          reader.onload = function () {
+            var data2 = [];
+            var csv = reader.result;
             compensated.textContent = csv;
             writeInArray(csv, data2, compensatedRange);
+            console.log("comp");
+            //console.log(csv);
             for (let i = 0; i < sortRange.length; i++) { // перебираемпо длине отсортированного массива 
               for (let j = 0; j < compensatedRange.length; j++) { //перебираем по длине откомпенсированого массива
                 if (compensatedRange[j][1] === sortRange[i][1]) {
@@ -1257,13 +1265,11 @@ dodrop(event);">
                 }
               }
             }
+            option && myChart.setOption(option);
+            option2 && myChart2.setOption(option2);
           }
           reader.onerror = function () {
             console.log(reader.error);
-          }
-          if (files.length == 1) {
-            option && myChart.setOption(option);
-            option2 && myChart2.setOption(option2);
           }
         }
       }
