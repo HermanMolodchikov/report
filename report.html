@@ -616,6 +616,18 @@ dodrop(event);">
           Acceptance criteria
         </div>
       </label>
+      <label>
+        <input name="Mismeasurements" value="0"></input>
+        <div class="label__text">
+          Mismeasurements
+        </div>
+      </label>
+      <label>
+        <input name="NoMeasurementDirections" value="0"></input>
+        <div class="label__text">
+          No measurement directions
+        </div>
+      </label>
       <button id="sendFormButton">Apply</button>
     </div>
   </div>
@@ -917,6 +929,11 @@ dodrop(event);">
       ['>25']
     ];
 
+    var colorFailedBack = "#FF7F50",
+        colorPassedBack = "#9ACD32";
+        colorFailed = "#8B0000";
+        colorPassed = "#006400";
+
     /*GET SEND form*/
     const form = document.getElementById('formElem');
     //form.addEventListener('submit', getForm);
@@ -937,7 +954,7 @@ dodrop(event);">
       statusContDir = document.getElementById('statusContDir'),
       trAccCrit = document.getElementById('trAccCrit'),
       statusAccCrit = document.getElementById('statusAccCrit'),
-      trMisMeas = document.getElementById('trsMisMeas'),
+      trMisMeas = document.getElementById('trMisMeas'),
       statusMisMeas = document.getElementById('statusMisMeas'),
       trNoMeasDir = document.getElementById('trNoMeasDir'),
       statusNoMeasDir = document.getElementById('statusNoMeasDir'),
@@ -953,6 +970,8 @@ dodrop(event);">
       getProject = form.querySelector('[name="Project"]'),
       getControlDir = form.querySelector('[name="Directions"]'),
       getAccept = form.querySelector('[name="Accept"]'),
+      getMismeasurements = form.querySelector('[name="Mismeasurements"]'),
+      getNoMeasurementDirections= form.querySelector('[name="NoMeasurementDirections"]'),
       sendFormButton = document.getElementById('sendFormButton');
 
     sendFormButton.addEventListener('click', function () {
@@ -962,6 +981,9 @@ dodrop(event);">
       project.textContent = getProject.value;
       controlDir.textContent = getControlDir.value;
       acceptCrit.textContent = getAccept.value;
+      trContDir.textContent = getControlDir.value;
+      trMisMeas.textContent = getMismeasurements.value;
+      trNoMeasDir.textContent = getNoMeasurementDirections.value;
     });
 
 
@@ -1019,6 +1041,47 @@ dodrop(event);">
       
     }
 
+    //set status  
+    function setStatus () {
+    if (controlDir.textContent === trContDir.textContent) {
+      statusContDir.textContent = "passed";
+      statusContDir.style.color = colorPassed;
+      statusContDir.style.backgroundColor = colorPassedBack;
+    } else {
+      statusContDir.textContent = "failed";
+      statusContDir.style.color = colorFailed;
+      statusContDir.style.backgroundColor = colorFailedBack;
+    };
+    if (acceptCrit.textContent.match(/\d\.\d{1,5}/ig) == trAccCrit.textContent) {
+      statusAccCrit.textContent = "passed";
+      statusAccCrit.style.color = colorPassed;
+      statusAccCrit.style.backgroundColor = colorPassedBack;
+    } else {
+      statusAccCrit.textContent = "failed";
+      statusAccCrit.style.color = colorFailed;
+      statusAccCrit.style.backgroundColor = colorFailedBack;
+      console.log(acceptCrit.textContent.match(/\d\.\d{1,5}/ig) + " " + trAccCrit.textContent);
+    };
+    if (misMeas.textContent === trMisMeas.textContent) {
+      statusMisMeas.textContent = "passed";
+      statusMisMeas.style.color = colorPassed;
+      statusMisMeas.style.backgroundColor = colorPassedBack;
+    } else {
+      statusMisMeas.textContent = "failed";
+      statusMisMeas.style.color = colorFailed;
+      statusMisMeas.style.backgroundColor = colorFailedBack;
+    };
+    if (noMeasDir.textContent === trNoMeasDir.textContent) {
+      statusNoMeasDir.textContent = "passed";
+      statusNoMeasDir.style.color = colorPassed;
+      statusNoMeasDir.style.backgroundColor = colorPassedBack;
+    } else {
+      statusNoMeasDir.textContent = "failed";
+      statusNoMeasDir.style.color = colorFailed;
+      statusNoMeasDir.style.backgroundColor = colorFailedBack;
+    }
+  };
+
     function addCountDeviation(getArr) {
       var toTen = [],
         toFifteen = [],
@@ -1060,6 +1123,9 @@ dodrop(event);">
         countDeviation[count].push(allDevitaion[count]);
 
       }
+      
+
+      setStatus();
       //console.log(countDeviation);
     }
 
@@ -1107,10 +1173,10 @@ dodrop(event);">
         let currentCalc = (maxValue - minValue);
         value.push(currentCalc.toFixed(2));
       }
-      console.log(value);
+      //console.log(value);
 
       //devAverage.textContent = countDevAve / numberMeasurements;
-      console.log(numberMeasurements + '   Numbermeas');
+      //console.log(numberMeasurements + '   Numbermeas');
 
       //console.log(data[0].length);
       //console.log(data[0]);
@@ -1200,6 +1266,7 @@ dodrop(event);">
       }
       //console.log(sortRange); 
     };
+    
 
     var app = {};
 
