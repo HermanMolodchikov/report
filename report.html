@@ -450,25 +450,25 @@ dodrop(event);">
   </div>
 
 
-  <div class="open-popup container">
+  <div class="container" spellcheck="false">
     <table style="border: 2px solid #000;">
       <tbody>
         <tr>
           <td>Vendor</td>
-          <td id="vendor"></td>
+          <td contenteditable="true" id="vendor">VILAB LLC</td>
         </tr>
         <tr>
           <td>Type</td>
-          <td id="typeIn"></td>
+          <td contenteditable="true" id="typeIn">Inline</td>
         </tr>
         <tr>
           <td>Location</td>
-          <td id="locat"></td>
+          <td contenteditable="true" id="locat">Germany Leipzig</td>
           </td>
         </tr>
         <tr>
           <td>Project</td>
-          <td id="project"></td>
+          <td contenteditable="true" id="project">Porsche PO426</td>
         </tr>
       </tbody>
     </table>
@@ -476,20 +476,20 @@ dodrop(event);">
       <tbody>
         <tr>
           <td>Station</td>
-          <td id="station"></td>
+          <td contenteditable="true" id="station"></td>
         </tr>
         <tr>
           <td>Measurement plan</td>
-          <td id="measPlan"></td>
+          <td contenteditable="true" id="measPlan"></td>
         </tr>
         <tr>
           <td>Production Number </td>
-          <td id="prodNumb"></td>
+          <td contenteditable="true" id="prodNumb"></td>
           </td>
         </tr>
         <tr>
           <td>Test date</td>
-          <td id="testDate"></td>
+          <td contenteditable="true" id="testDate"></td>
         </tr>
       </tbody>
     </table>
@@ -497,23 +497,23 @@ dodrop(event);">
       <tbody>
         <tr style="font-weight: 900; border-bottom: 4px solid #000;">
           <td>Test specification</td>
-          <td></td>
+          <td contenteditable="true"></td>
         </tr>
         <tr>
           <td>Controlled direciont</td>
-          <td id="controlDir"></td>
+          <td contenteditable="true" id="controlDir">X Y Z</td>
         </tr>
         <tr>
           <td>Acceptance criteria</td>
-          <td id="acceptCrit">Max Deviation is</td>
+          <td id="acceptCrit">Max Deviation is  <span contenteditable="true">0.36</span></td>
         </tr>
         <tr>
           <td>Mismeasurements</td>
-          <td id="misMeas">0</td>
+          <td contenteditable="true" id="misMeas">0</td>
         </tr>
         <tr>
           <td>No measurement directions</td>
-          <td id="noMeasDir">0</td>
+          <td contenteditable="true" id="noMeasDir">0</td>
         </tr>
       </tbody>
     </table>
@@ -637,11 +637,16 @@ dodrop(event);">
 
   <input hidden id="csvfile" type="file" name="readable" accept=".csv" />
 
-  <div hidden id="preview"></div><!-- спрятанный элемент -->
-  <div hidden id="compensated"></div><!-- спрятанный элемент -->
-  <div hidden id="uncompensated"></div><!-- спрятанный элемент -->
+  <div id="preview" hidden></div><!-- спрятанный элемент -->
+  <div id="compensated" hidden></div><!-- спрятанный элемент -->
+  <div id="uncompensated" hidden></div><!-- спрятанный элемент -->
 
   <style>
+    #compensated,
+    #uncompensated {
+      white-space: pre-wrap;
+    }
+
     body {
       font-family: "Tahoma", sans-serif;
       height: 842px;
@@ -903,32 +908,32 @@ dodrop(event);">
     }
 
     //POPUP
-    let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
-    let popup = document.querySelector('.popup'); // Само окно
-    let openPopupButtons = document.querySelectorAll('.open-popup'); // Кнопки для показа окна
-    let closePopupButton = document.querySelector('.close-popup'); // Кнопка для скрытия окна
-    openPopupButtons.forEach((button) => { // Перебираем все кнопки
-      button.addEventListener('click', (e) => { // Для каждой вешаем обработчик событий на клик
-        e.preventDefault(); // Предотвращаем дефолтное поведение браузера
-        popupBg.classList.add('active'); // Добавляем класс 'active' для фона
-        popup.classList.add('active'); // И для самого окна
-      })
-    });
+    // let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
+    // let popup = document.querySelector('.popup'); // Само окно
+    // let openPopupButtons = document.querySelectorAll('.open-popup'); // Кнопки для показа окна
+    // let closePopupButton = document.querySelector('.close-popup'); // Кнопка для скрытия окна
+    // openPopupButtons.forEach((button) => { // Перебираем все кнопки
+    //   button.addEventListener('click', (e) => { // Для каждой вешаем обработчик событий на клик
+    //     e.preventDefault(); // Предотвращаем дефолтное поведение браузера
+    //     popupBg.classList.add('active'); // Добавляем класс 'active' для фона
+    //     popup.classList.add('active'); // И для самого окна
+    //   })
+    // });
 
-    closePopupButton.addEventListener('click', () => { // Вешаем обработчик на крестик
-      popupBg.classList.remove('active'); // Убираем активный класс с фона
-      popup.classList.remove('active'); // И с окна
-    });
+    // closePopupButton.addEventListener('click', () => { // Вешаем обработчик на крестик
+    //   popupBg.classList.remove('active'); // Убираем активный класс с фона
+    //   popup.classList.remove('active'); // И с окна
+    // });
 
-    document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
-      if (e.target === popupBg) { // Если цель клика - фот, то:
-        popupBg.classList.remove('active'); // Убираем активный класс с фона
-        popup.classList.remove('active'); // И с окна
-      }
-    });
+    // document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
+    //   if (e.target === popupBg) { // Если цель клика - фот, то:
+    //     popupBg.classList.remove('active'); // Убираем активный класс с фона
+    //     popup.classList.remove('active'); // И с окна
+    //   }
+    // });
   </script>
 
-  <script type="text/javascript">
+  <script>
     let compensated = document.getElementById('compensated');
     let uncompensated = document.getElementById('uncompensated');
     var range = [];
@@ -1008,6 +1013,12 @@ dodrop(event);">
         readFromHere(compensated.textContent, uncompensated.textContent);
       }
     };
+
+    if (navigator.userAgent.search(/Firefox/) > 0 ){
+      console.log(navigator.userAgent);
+      console.log(navigator.userAgent.search(/Firefox/));
+    }
+    
 
     /*Чтение из сохраненных данных*/
     function readFromHere(comp, uncomp) {
@@ -1220,7 +1231,7 @@ dodrop(event);">
       //output("File Count: " + count + "\n");
       for (let i = 0; i < files.length; i++) {
         let reader = new FileReader();
-        reader.readAsText(files[i]); //читаем файл как текст
+        reader.readAsText(files[i], 'utf-8'); //читаем файл как текст
         //reader.readAsBinaryString(files[i]);
         //console.log(files[i].name);
         var currentFile = files[i].name;
@@ -1239,7 +1250,7 @@ dodrop(event);">
             //compensated.textContent = null;
             uncompensated.textContent = csv;
             writeInArray(csv, data, range);
-            //console.log(uncompensated.textcontent);
+            console.log(csv);
             console.log("uncomp");
             //console.log(csv);
             //console.log(currentFile);
