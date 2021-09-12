@@ -505,7 +505,7 @@ dodrop(event);">
         </tr>
         <tr>
           <td>Acceptance criteria</td>
-          <td id="acceptCrit">Max Deviation is <span contenteditable="true">0.36</span></td>
+          <td id="acceptCrit">Max Deviation is <span contenteditable="true">0.15</span></td>
         </tr>
         <tr>
           <td>Mismeasurements</td>
@@ -952,12 +952,11 @@ dodrop(event);">
     function getCol(matrix, col) {
       var column = [];
 
-      for (var itemRow = 0; itemRow < matrix
-        .length; itemRow++) { //перебираем двумерный массив по количеству вложенных массивов
-        //if (col[itemRow] == NaN) {
-        //continue;
+      for (var itemRow = 0; itemRow < matrix.length; itemRow++) { //перебираем двумерный массив по количеству вложенных массивов
+        if (matrix[itemRow][col] == "NaN") {
+        continue;
         //   console.log("have NaN");
-        // };
+        };
         column.push(matrix[itemRow][col]); // пушим в колонку каждый полученный эллемент
       }
       //console.log(matrix[0][col]);
@@ -1148,7 +1147,7 @@ dodrop(event);">
         //console.log(reader);
         //console.log(data);
 
-        if (RegExp(/without/i).test(currentFile)) {
+        if (RegExp(/comp/i).test(currentFile)) {
           reader.onload = function () {
             var data = [];
             var csv = reader.result;
@@ -1181,7 +1180,7 @@ dodrop(event);">
           option2 && myChart2.setOption(option2);
         }
         //console.log(sortRange);
-        if (RegExp(/comp/i).test(currentFile)) {
+        if (RegExp(/without/i).test(currentFile)) {
           reader.onload = function () {
             var data2 = [];
             var csv = reader.result;
@@ -1220,14 +1219,14 @@ dodrop(event);">
       for (var count = 0; count <= arrForPointUncomp.length - 1; count++) {
         //console.log(arrForPoint[count][0]);
         if (arrForPointUncomp[count][0] == getParams.name) {
-          measForOnePointUncomp = arrForPointUncomp[count].splice(1);
+          measForOnePointUncomp = arrForPointUncomp[count];
           //console.log(getParams.name);
           console.log(arrForPointUncomp[count][0]);
         };
       };
       for (var i = 0; i <= arrForPointComp.length - 1; i++) {
         if (arrForPointComp[i][0] == getParams.name) {
-          measForOnePointComp = arrForPointComp[i].splice(1);
+          measForOnePointComp = arrForPointComp[i];
         }
       }
       console.log(measForOnePointComp);
@@ -1479,7 +1478,7 @@ dodrop(event);">
 
     option3 = {
       dataset: [{
-        dimensions: ['Uncompensted', 'Compensated', 'Date'],
+        dimensions: ['Compensated', 'Uncompensted', 'Date'],
         source: lineGraphData
       }, ],
       title: {
@@ -1489,7 +1488,7 @@ dodrop(event);">
         trigger: 'axis'
       },
       legend: {
-        data: ['Uncompensted', 'Compensated', 'Date']
+        data: ['Compensated', 'Uncompensted', 'Date']
       },
       xAxis: {
         type: 'category',
@@ -1517,13 +1516,13 @@ dodrop(event);">
           type: 'shadow'
         },
       },
-      series: [{
-        name: 'Uncompensted',
+      series: [ {
+        name: 'Compensated',
         type: 'line',
         showSymbol: false,
         encode: {
           x: 'Date',
-          y: 'Uncompensted'
+          y: 'Compensated'
         },
         label: {
           show: true,
@@ -1536,13 +1535,13 @@ dodrop(event);">
           interval: 0,
           rotate: 60,
         }
-      }, {
-        name: 'Compensated',
+      },{
+        name: 'Uncompensted',
         type: 'line',
         showSymbol: false,
         encode: {
           x: 'Date',
-          y: 'Compensated'
+          y: 'Uncompensted'
         },
         label: {
           show: true,
