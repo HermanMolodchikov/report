@@ -505,7 +505,7 @@ dodrop(event);">
         </tr>
         <tr>
           <td>Acceptance criteria</td>
-          <td id="acceptCrit">Max Deviation is  <span contenteditable="true">0.36</span></td>
+          <td id="acceptCrit">Max Deviation is <span contenteditable="true">0.36</span></td>
         </tr>
         <tr>
           <td>Mismeasurements</td>
@@ -573,65 +573,11 @@ dodrop(event);">
   </div>
 
 
-  <div class="popup__bg">
-    <div id="formElem" class="popup">
-      <p class="close-popup">x</p>
-      <label>
-        <input type="text" name="Vendor" value="VILAB LLC">
-        <div class="label__text">
-          Vendor
-        </div>
-      </label>
-      <label>
-        <input type="text" name="Type" value="Inline">
-        <div class="label__text">
-          Type
-        </div>
-      </label>
-      <label>
-        <input type="text" name="Location" value="Germany Leipzig"></input>
-        <div class="label__text">
-          Location
-        </div>
-      </label>
-      <label>
-        <input type="text" name="Project" value="Porsche PO426">
-        <div class="label__text">
-          Project
-        </div>
-      </label>
-      <label>
-        <select name="Directions" id="">
-          <option value="X Y Z">X Y Z</option>
-          <option value="X Y Z XV YV ZV">X Y Z XV YV ZV</option>
-        </select>
-        <div class="label__text">
-          Controlled directions
-        </div>
-      </label>
-      <label>
-        <input name="Accept" value="Max Deviation is 0.25"></input>
-        <div class="label__text">
-          Acceptance criteria
-        </div>
-      </label>
-      <label>
-        <input name="Mismeasurements" value="0"></input>
-        <div class="label__text">
-          Mismeasurements
-        </div>
-      </label>
-      <label>
-        <input name="NoMeasurementDirections" value="0"></input>
-        <div class="label__text">
-          No measurement directions
-        </div>
-      </label>
-      <button id="sendFormButton">Apply</button>
-    </div>
-  </div>
+
   <a id="todownloadComp" class="noprint">Download compensated</a>
   <a id="todownloadUncomp" class="noprint">Donwload uncompansated</a>
+  <div id="main_3" class="noprint" style="height:200px; width: 100%;">
+  </div>
   <div id="main" style="height:500px; width: 100%;">
   </div>
 
@@ -702,10 +648,6 @@ dodrop(event);">
       border-spacing: 0px;
       border-collapse: collapse;
       margin-bottom: 20px;
-    }
-
-    table:hover {
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     }
 
     svg {
@@ -906,31 +848,6 @@ dodrop(event);">
       this.href = myData;
       this.download = 'without.csv';
     }
-
-    //POPUP
-    // let popupBg = document.querySelector('.popup__bg'); // Фон попап окна
-    // let popup = document.querySelector('.popup'); // Само окно
-    // let openPopupButtons = document.querySelectorAll('.open-popup'); // Кнопки для показа окна
-    // let closePopupButton = document.querySelector('.close-popup'); // Кнопка для скрытия окна
-    // openPopupButtons.forEach((button) => { // Перебираем все кнопки
-    //   button.addEventListener('click', (e) => { // Для каждой вешаем обработчик событий на клик
-    //     e.preventDefault(); // Предотвращаем дефолтное поведение браузера
-    //     popupBg.classList.add('active'); // Добавляем класс 'active' для фона
-    //     popup.classList.add('active'); // И для самого окна
-    //   })
-    // });
-
-    // closePopupButton.addEventListener('click', () => { // Вешаем обработчик на крестик
-    //   popupBg.classList.remove('active'); // Убираем активный класс с фона
-    //   popup.classList.remove('active'); // И с окна
-    // });
-
-    // document.addEventListener('click', (e) => { // Вешаем обработчик на весь документ
-    //   if (e.target === popupBg) { // Если цель клика - фот, то:
-    //     popupBg.classList.remove('active'); // Убираем активный класс с фона
-    //     popup.classList.remove('active'); // И с окна
-    //   }
-    // });
   </script>
 
   <script>
@@ -939,6 +856,12 @@ dodrop(event);">
     var range = [];
     var sortRange = [];
     var compensatedRange = [];
+    var timeForOnePoint = [];
+    var allMeasurentsPointsUncomp = [];
+    var allMeasurentsPointsComp = [];
+    var measForOnePointUncomp = [];
+    var measForOnePointComp = [];
+    var lineGraphData = [];
     var files;
     var countDeviation = [
       ['0.00, 0.10'],
@@ -980,32 +903,7 @@ dodrop(event);">
       devMin = document.getElementById('DevMin'),
       devMax = document.getElementById('DevMax'),
       devAverage = document.getElementById('DevAverage'),
-      dirCount = document.getElementById('DirCount'),
-
-
-      getVendor = form.querySelector('[name="Vendor"]'),
-      getType = form.querySelector('[name="Type"]'),
-      getLocation = form.querySelector('[name="Location"]'),
-      getProject = form.querySelector('[name="Project"]'),
-      getControlDir = form.querySelector('[name="Directions"]'),
-      getAccept = form.querySelector('[name="Accept"]'),
-      getMismeasurements = form.querySelector('[name="Mismeasurements"]'),
-      getNoMeasurementDirections = form.querySelector('[name="NoMeasurementDirections"]'),
-      sendFormButton = document.getElementById('sendFormButton');
-
-    sendFormButton.addEventListener('click', function () {
-      vendor.textContent = getVendor.value;
-      typeIn.textContent = getType.value;
-      locat.textContent = getLocation.value;
-      project.textContent = getProject.value;
-      controlDir.textContent = getControlDir.value;
-      acceptCrit.textContent = getAccept.value;
-      trContDir.textContent = getControlDir.value;
-      trMisMeas.textContent = getMismeasurements.value;
-      trNoMeasDir.textContent = getNoMeasurementDirections.value;
-    });
-
-
+      dirCount = document.getElementById('DirCount');
 
     window.onload = function () {
       if (RegExp(/Measurement/i).test(compensated.textContent) || RegExp(/Measurement/i).test(uncompensated
@@ -1014,11 +912,11 @@ dodrop(event);">
       }
     };
 
-    if (navigator.userAgent.search(/Firefox/) > 0 ){
+    if (navigator.userAgent.search(/Firefox/) > 0) {
       console.log(navigator.userAgent);
       console.log(navigator.userAgent.search(/Firefox/));
     }
-    
+
 
     /*Чтение из сохраненных данных*/
     function readFromHere(comp, uncomp) {
@@ -1045,7 +943,6 @@ dodrop(event);">
         }
       }
       option && myChart.setOption(option);
-
       option2 && myChart2.setOption(option2);
 
       //console.log(comp);
@@ -1057,7 +954,8 @@ dodrop(event);">
 
       for (var itemRow = 0; itemRow < matrix
         .length; itemRow++) { //перебираем двумерный массив по количеству вложенных массивов
-        // if (col[itemRow] == "NaN") {
+        //if (col[itemRow] == NaN) {
+        //continue;
         //   console.log("have NaN");
         // };
         column.push(matrix[itemRow][col]); // пушим в колонку каждый полученный эллемент
@@ -1163,11 +1061,16 @@ dodrop(event);">
       testDate.textContent = rows[1].split(";")[1].match(/\d{1,2}\/\d{1,2}\/\d{4}/);
       for (var i = 0; i < rows.length; i++) {
         if (rows[i] == '') continue;
+        if ([i] != 0) {
+          timeForOnePoint.push(rows[i].split(";")[1]);
+        };
+
         var cells = rows[i].split(";").splice(
           3
         ); //преобразоваываем каждую сторку в массив и убираем не нужны первые три значения номер модели, дата, план
         data.push(cells);
       }
+      console.log(timeForOnePoint);
       //console.log(data[0]);
       var points = data[0];
       var value = [];
@@ -1190,6 +1093,9 @@ dodrop(event);">
           countDevAve += Number(currentGetCol[i]);
         };
 
+        //allMeasurendtsPoints.push(currentGetCol); //запушиваем точки со всеми измерениями в дыухмерный массив
+
+
         let minValue = Math.min.apply(null, currentGetCol.filter(function (n) {
           return !isNaN(n);
         }));
@@ -1208,9 +1114,9 @@ dodrop(event);">
         //pushToArr.push(points[item]);
         //console.log(points[item]);
         pushToArr[item] = []; //добавление вложеного массива
-        pushToArr[item].push(Number(value[item])); //пушим в текущщий массив вычесленной значение рэнджа
+        pushToArr[item].push(value[item]); //пушим в текущщий массив вычесленной значение рэнджа
         pushToArr[item].push(points[item]) // пушим название точек после каждого соответсвующего значения
-        pushToArr[item].push(Number(limit)); //пушим в каждую точку лимит
+        pushToArr[item].push(limit); //пушим в каждую точку лимит
 
       }
       //console.log(pushToArr);
@@ -1249,9 +1155,17 @@ dodrop(event);">
             //uncompensated.textContent = null;
             //compensated.textContent = null;
             uncompensated.textContent = csv;
+
+
             writeInArray(csv, data, range);
-            console.log(csv);
-            console.log("uncomp");
+            var points = data[0];
+            for (var stringMeas = 0; stringMeas < points.length; stringMeas++) {
+              var currentGetCol = getCol(data, stringMeas);
+              allMeasurentsPointsUncomp.push(
+              currentGetCol); //запушиваем точки со всеми измерениями в дыухмерный массив
+            }
+            //console.log(csv);
+            //console.log("uncomp");
             //console.log(csv);
             //console.log(currentFile);
             range.sort(RecordSort); // сортируем массив по первым значениям вложеных массивов
@@ -1263,6 +1177,8 @@ dodrop(event);">
             //console.log(sortRange);
             addCountDeviation(sortRange);
           }
+          option && myChart.setOption(option);
+          option2 && myChart2.setOption(option2);
         }
         //console.log(sortRange);
         if (RegExp(/comp/i).test(currentFile)) {
@@ -1271,8 +1187,12 @@ dodrop(event);">
             var csv = reader.result;
             compensated.textContent = csv;
             writeInArray(csv, data2, compensatedRange);
-            console.log("comp");
-            //console.log(csv);
+            var points = data2[0];
+            for (var stringMeas = 0; stringMeas < points.length; stringMeas++) {
+              var currentGetCol = getCol(data2, stringMeas);
+              allMeasurentsPointsComp.push(currentGetCol); //запушиваем точки со всеми измерениями в дыухмерный массив
+            }
+            console.log(allMeasurentsPointsComp);
             for (let i = 0; i < sortRange.length; i++) { // перебираемпо длине отсортированного массива 
               for (let j = 0; j < compensatedRange.length; j++) { //перебираем по длине откомпенсированого массива
                 if (compensatedRange[j][1] === sortRange[i][1]) {
@@ -1291,6 +1211,34 @@ dodrop(event);">
         }
       }
       //console.log(sortRange); 
+    };
+
+
+    function lineGraphForOneDir(arrForPointUncomp, arrForPointComp, getParams) {
+      //console.log(arrForPoint[0][0]);
+      //console.log(params.name);
+      for (var count = 0; count <= arrForPointUncomp.length - 1; count++) {
+        //console.log(arrForPoint[count][0]);
+        if (arrForPointUncomp[count][0] == getParams.name) {
+          measForOnePointUncomp = arrForPointUncomp[count].splice(1);
+          //console.log(getParams.name);
+          console.log(arrForPointUncomp[count][0]);
+        };
+      };
+      for (var i = 0; i <= arrForPointComp.length - 1; i++) {
+        if (arrForPointComp[i][0] == getParams.name) {
+          measForOnePointComp = arrForPointComp[i].splice(1);
+        }
+      }
+      console.log(measForOnePointComp);
+      for (var count = 0; count <= measForOnePointUncomp.length; count++) {
+        lineGraphData[count] = [];
+        lineGraphData[count].push((measForOnePointUncomp[count] - measForOnePointUncomp[1]).toFixed(3));
+        lineGraphData[count].push((measForOnePointComp[count] - measForOnePointComp[1]).toFixed(3));
+        lineGraphData[count].push(timeForOnePoint[count]);
+      };
+
+      console.log(lineGraphData);
     };
 
 
@@ -1471,6 +1419,7 @@ dodrop(event);">
           name: 'limit',
           type: 'line',
           color: 'red',
+          smooth: true,
           showSymbol: false
         }
       ],
@@ -1500,7 +1449,7 @@ dodrop(event);">
         }
       },
       grid: {
-        bottom: 160,
+        bottom: 100,
         left: '5%',
         right: '2%',
         top: '10%',
@@ -1515,6 +1464,106 @@ dodrop(event);">
 
     };
     option && myChart.setOption(option);
+
+    myChart.on('click', function (params) {
+      lineGraphForOneDir(allMeasurentsPointsUncomp, allMeasurentsPointsComp, params);
+      option3 && myChart3.setOption(option3);
+      //console.log(measForOnePoint);
+    });
+  </script>
+
+  <script>
+    var chartDom3 = document.getElementById('main_3');
+    var myChart3 = echarts.init(chartDom3);
+    var option3;
+
+    option3 = {
+      dataset: [{
+        dimensions: ['Uncompensted', 'Compensated', 'Date'],
+        source: lineGraphData
+      }, ],
+      title: {
+        text: ''
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data: ['Uncompensted', 'Compensated', 'Date']
+      },
+      xAxis: {
+        type: 'category',
+        nameLocation: 'middle',
+        axisLabel: {
+          interval: 0,
+          rotate: -90,
+          textStyle: {
+            fontSize: 10,
+            fontWeight: 900
+          }
+        },
+      },
+      yAxis: {
+        axisLabel: {
+          textStyle: {
+            fontSize: 10,
+            fontWeight: 900
+          }
+        }
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        },
+      },
+      series: [{
+        name: 'Uncompensted',
+        type: 'line',
+        showSymbol: false,
+        encode: {
+          x: 'Date',
+          y: 'Uncompensted'
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 8,
+            fontWeight: 900,
+            lineHeight: 0,
+          },
+          interval: 0,
+          rotate: 60,
+        }
+      }, {
+        name: 'Compensated',
+        type: 'line',
+        showSymbol: false,
+        encode: {
+          x: 'Date',
+          y: 'Compensated'
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 8,
+            fontWeight: 900,
+            lineHeight: 0,
+          },
+          interval: 0,
+          rotate: 60,
+        }
+      }, ],
+      grid: {
+        bottom: 10,
+        left: '5%',
+        right: '2%',
+        top: '10%',
+      },
+
+    };
   </script>
 
   <script>
@@ -1556,94 +1605,6 @@ dodrop(event);">
     };
 
     option2 && myChart2.setOption(option2);
-  </script>
-
-  <script>
-    // Элемент для выбора файлов.
-    const INPUT = document.querySelector('input[name="readable"]');
-    // Элемент для вывода сгенерированной таблицы.
-    const PREVIEW = document.querySelector('#preview');
-    // Регулярное выражение для проверки расширения файла.
-    const REGEX = new RegExp('(.*?)\.(csv)$', 'i');
-
-    // Функция, отрабатывающая при выборе файла.
-    function handleFile(event) {
-      // Выбираем первый файл из списка файлов.
-      const file = event.target.files[0];
-
-      // Если файл выбран и его расширение допустимо,
-      // то читаем его содержимое и отправляем
-      // в функцию отрисовки таблицы.
-      if (file && REGEX.test(file.name)) {
-        // Создаем экземпляр объекта.
-        const reader = new FileReader();
-
-        // Чтение файла асинхронное, поэтому
-        // создание таблицы привязываем к событию `load`,
-        // которое срабатывает при успешном завершении операции чтения.
-        reader.onload = (e) => renderTable(e.target.result);
-
-        // Читаем содержимое как текстовый файл.
-        reader.readAsText(file);
-      } else {
-        // Мизерная обработка ошибок.
-        alert('Файл не выбран либо его формат не поддерживается.');
-        event.target.value = '';
-      }
-    }
-
-    // Функция отрисовки таблицы.
-    function renderTable(data) {
-      // Предварительно создадим элементы,
-      // отвечающие за каркас таблицы.
-      let table = document.createElement('table');
-      let thead = document.createElement('thead');
-      let tbody = document.createElement('tbody');
-
-      // Добавим класс к таблице.
-      table.classList.add('table');
-
-      // Разбиваем входящие данные построчно.
-      // Разделитель - перенос строки.
-      // Перебираем полученный массив строк.
-      data.split(/\r\n|\r|\n/)
-        .forEach(function (row, index) {
-          // Создадим элемент строки для таблицы.
-          let trow = document.createElement('tr');
-
-          // Разбиваем каждую строку на ячейку.
-          // Разделитель - точка с запятой.
-          // Перебираем полученный массив будущих ячеек.
-          row.split(/;/).forEach(function (cell) {
-            // Создадим элемент ячейки для таблицы.
-            let tcell = document.createElement(index > 0 ? 'td' : 'th');
-            // Заполним содержимое ячейки.
-            tcell.textContent = cell;
-            // Добавляем ячейку к родительской строке.
-            trow.appendChild(tcell);
-          });
-
-          // Добавляем строку к родительскому элементу.
-          // Если индекс строки больше нуля,
-          // то родительский элемент - `tbody`,
-          // в противном случае- `thead`.
-          index > 0 ? tbody.appendChild(trow) : thead.appendChild(trow);
-        });
-
-      // Добавляем заголовок таблицы к родительскому элементу.
-      table.appendChild(thead);
-      // Добавляем тело таблицы к родительскому элементу.
-      table.appendChild(tbody);
-
-      // Очищаем элемент для вывода таблицы.
-      PREVIEW.innerHTML = '';
-      // Добавляем саму таблицу к родительскому элементу.
-      PREVIEW.appendChild(table);
-    }
-
-    // Регистрируем функцию обработчика события `change`,
-    // срабатывающего при изменении элемента выбора файла.
-    INPUT.addEventListener('change', handleFile);
   </script>
 
 </body>
